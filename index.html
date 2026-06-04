@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Beta Reader — AI Bouldering Coach</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+  :root {
+    --accent: #E8FF47;
+    --bg: #0D0D0D;
+    --surface: #161616;
+    --surface2: #1F1F1F;
+    --muted: #555;
+    --text: #F0F0F0;
+    --red: #ff6b6b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    padding: 28px 40px 20px;
+    border-bottom: 1px solid #222;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--accent); }
+  .logo-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  main {
+    width: 100%;
+    max-width: 860px;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  #dropzone {
+    border: 2px dashed #333;
+    border-radius: 12px;
+    padding: 52px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+    text-align: center;
+  }
+  #dropzone.drag-over { border-color: var(--accent); background: rgba(232,255,71,0.04); }
+  .drop-icon { font-size: 40px; line-height: 1; }
+  .drop-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+  .drop-sub { font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .hint { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.7; }
+
+  .btn-accent {
+    background: var(--accent); color: #000; border: none; border-radius: 6px;
+    padding: 10px 22px; font-size: 13px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.04em; font-family: 'DM Mono', monospace;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: opacity 0.15s;
+  }
+  .btn-accent:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent; border: 1px solid #333; color: var(--muted);
+    border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer;
+    font-family: 'DM Mono', monospace; letter-spacing: 0.06em;
+    align-self: flex-start;
+  }
+
+  .video-card { background: var(--surface); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .video-wrap { background: #000; display: flex; justify-content: center; max-height: 500px; }
+  .video-wrap video { max-height: 500px; max-width: 100%; display: block; }
+  .video-meta {
+    padding: 14px 20px; display: flex; justify-content: space-between;
+    align-items: center; border-top: 1px solid #222; gap: 12px;
+  }
+  .file-name { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  #status-card {
+    background: var(--surface); border-radius: 12px; padding: 20px 22px;
+    display: none; flex-direction: column; gap: 12px;
+  }
+  #status-card.visible { display: flex; }
+  .status-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .status-dot.done { animation: none; background: #4dff91; }
+  .status-dot.err  { animation: none; background: var(--red); }
+
+  .progress-bar { height: 3px; background: #222; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+  .frames-card { background: var(--surface); border-radius: 12px; overflow: hidden; }
+  .frames-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 20px 0; }
+  .frames-bar { display: flex; gap: 8px; padding: 16px 20px; overflow-x: auto; }
+  .frames-bar img { width: 72px; height: 72px; border-radius: 6px; object-fit: cover; flex-shrink: 0; border: 1px solid #2a2a2a; }
+
+  .coach-card { background: var(--surface); border-radius: 12px; overflow: hidden; animation: fadeIn 0.4s ease; }
+  .coach-header {
+    background
